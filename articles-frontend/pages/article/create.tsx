@@ -21,8 +21,10 @@ export default function CreateArticle() {
   );
 
   const validate = () => {
-    if (form.title.length < VALIDATION_LIMITS.TITLE.MIN) return "Title is too short (min 5 chars).";
-    if (form.title.length > VALIDATION_LIMITS.TITLE.MAX) return "Title is too long (max 255 chars).";
+    if (form.title.length < VALIDATION_LIMITS.TITLE.MIN)
+      return "Title is too short (min 5 chars).";
+    if (form.title.length > VALIDATION_LIMITS.TITLE.MAX)
+      return "Title is too long (max 255 chars).";
     if (form.content.length < VALIDATION_LIMITS.CONTENT.MIN)
       return "Content must be at least 20 characters.";
     return null;

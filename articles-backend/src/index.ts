@@ -19,12 +19,15 @@ const resolvers = {
     articles: async (): Promise<Article[]> => {
       return prisma.sportsArticle.findMany({
         where: { deletedAt: null },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }) as unknown as Article[];
     },
-    article: async (_: unknown, { id }: { id: string }): Promise<Article | null> => {
-      return prisma.sportsArticle.findUnique({ 
-        where: { id } 
+    article: async (
+      _: unknown,
+      { id }: { id: string },
+    ): Promise<Article | null> => {
+      return prisma.sportsArticle.findUnique({
+        where: { id },
       }) as unknown as Article | null;
     },
   },
@@ -32,34 +35,46 @@ const resolvers = {
     createArticle: async (_: unknown, { input }: { input: ArticleInput }) => {
       const { title, content } = input;
 
-      if (title.length < VALIDATION_LIMITS.TITLE.MIN || title.length > VALIDATION_LIMITS.TITLE.MAX) {
+      if (
+        title.length < VALIDATION_LIMITS.TITLE.MIN ||
+        title.length > VALIDATION_LIMITS.TITLE.MAX
+      ) {
         throw new GraphQLError("Title must be between 5 and 255 characters.", {
-          extensions: { code: 'BAD_USER_INPUT' },
+          extensions: { code: "BAD_USER_INPUT" }, //TODO: we do not catch it on FE side yet
         });
       }
-      
-      if (content.length < VALIDATION_LIMITS.CONTENT.MIN || content.length > VALIDATION_LIMITS.CONTENT.MAX) {
+
+      if (
+        content.length < VALIDATION_LIMITS.CONTENT.MIN ||
+        content.length > VALIDATION_LIMITS.CONTENT.MAX
+      ) {
         throw new GraphQLError("Content must be at least 20 characters.", {
-          extensions: { code: 'BAD_USER_INPUT' },
+          extensions: { code: "BAD_USER_INPUT" }, //TODO: we do not catch it on FE side yet
         });
       }
 
       return prisma.sportsArticle.create({ data: input });
     },
-    updateArticle: async (_: unknown, { id, input }: { id: string; input: ArticleInput }) => {
+    updateArticle: async (
+      _: unknown,
+      { id, input }: { id: string; input: ArticleInput },
+    ) => {
       return prisma.sportsArticle.update({
         where: { id },
         data: input,
       });
     },
-    deleteArticle: async (_: unknown, { id }: { id: string }): Promise<boolean> => {
+    deleteArticle: async (
+      _: unknown,
+      { id }: { id: string },
+    ): Promise<boolean> => {
       try {
         await prisma.sportsArticle.update({
           where: { id },
-          data: { deletedAt: new Date() }
+          data: { deletedAt: new Date() },
         });
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
