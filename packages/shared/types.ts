@@ -5,3 +5,9 @@ export interface Article {
   imageUrl?: string | null;
   createdAt?: string | null;
 }
+
+export interface ArticleInput {
+  title: string;
+  content: string;
+  imageUrl: string;
+}

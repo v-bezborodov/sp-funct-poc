@@ -1,75 +1,65 @@
 import "dotenv/config";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import * as Prisma from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import { VALIDATION_LIMITS } from "@sports-app/shared/validation";
+import { Article, ArticleInput } from "@sports-app/shared/types";
+import { GraphQLError } from "graphql";
+import { typeDefs } from "./schema";
+import { PrismaClient } from "@prisma/client";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 
-const prisma = new (Prisma as any).PrismaClient({ adapter });
-
-const typeDefs = `#graphql
-  type SportsArticle {
-    id: ID!
-    title: String!
-    content: String!
-    imageUrl: String
-    createdAt: String
-  }
-
-  input ArticleInput {
-    title: String!
-    content: String!
-    imageUrl: String
-  }
-
-  type Query {
-    articles: [SportsArticle!]!
-    article(id: ID!): SportsArticle
-  }
-
-  type Mutation {
-    createArticle(input: ArticleInput!): SportsArticle!
-    updateArticle(id: ID!, input: ArticleInput!): SportsArticle!
-    deleteArticle(id: ID!): Boolean
-  }
-`;
+const prisma = new PrismaClient({ adapter });
 
 const resolvers = {
   Query: {
-    articles: () =>
-      prisma.sportsArticle.findMany({ where: { deletedAt: null } }),
-    article: (_: any, { id }: { id: string }) =>
-      prisma.sportsArticle.findUnique({ where: { id } }),
+    articles: async (): Promise<Article[]> => {
+      return prisma.sportsArticle.findMany({
+        where: { deletedAt: null },
+        orderBy: { createdAt: 'desc' },
+      }) as unknown as Article[];
+    },
+    article: async (_: unknown, { id }: { id: string }): Promise<Article | null> => {
+      return prisma.sportsArticle.findUnique({ 
+        where: { id } 
+      }) as unknown as Article | null;
+    },
   },
   Mutation: {
-    createArticle: (_: any, { input }: any) => {
+    createArticle: async (_: unknown, { input }: { input: ArticleInput }) => {
       const { title, content } = input;
 
-      if (title.length < 5 || title.length > 255) {
-        throw new Error("Title must be between 5 and 255 characters.");
+      if (title.length < VALIDATION_LIMITS.TITLE.MIN || title.length > VALIDATION_LIMITS.TITLE.MAX) {
+        throw new GraphQLError("Title must be between 5 and 255 characters.", {
+          extensions: { code: 'BAD_USER_INPUT' },
+        });
       }
-      if (content.length < 20 || content.length > 5000) {
-        throw new Error("Content must be between 20 and 5000 characters.");
+      
+      if (content.length < VALIDATION_LIMITS.CONTENT.MIN || content.length > VALIDATION_LIMITS.CONTENT.MAX) {
+        throw new GraphQLError("Content must be at least 20 characters.", {
+          extensions: { code: 'BAD_USER_INPUT' },
+        });
       }
 
       return prisma.sportsArticle.create({ data: input });
     },
-    updateArticle: async (_: any, { id, input }: any) => {
-      return await prisma.sportsArticle.update({
-        where: { id: String(id) },
+    updateArticle: async (_: unknown, { id, input }: { id: string; input: ArticleInput }) => {
+      return prisma.sportsArticle.update({
+        where: { id },
         data: input,
       });
     },
-    deleteArticle: async (_: any, { id }: any) => {
+    deleteArticle: async (_: unknown, { id }: { id: string }): Promise<boolean> => {
       try {
-        await prisma.sportsArticle.delete({
-          where: { id: String(id) },
+        await prisma.sportsArticle.update({
+          where: { id },
+          data: { deletedAt: new Date() }
         });
         return true;
-      } catch {
+      } catch (error) {
         return false;
       }
     },

@@ -45,7 +45,6 @@ export default function EditArticle({ article }: { article: Article }) {
   return (
     <div className="min-h-screen py-12 bg-zinc-50 dark:bg-black">
       <div className="max-w-xl mx-auto bg-white dark:bg-zinc-900 p-8 rounded-2xl shadow-xl relative overflow-hidden">
-        {/* 3. The Loading Circle Overlay */}
         {isUpdating && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/70 backdrop-blur-[2px] dark:bg-black/70 transition-all">
             <svg
