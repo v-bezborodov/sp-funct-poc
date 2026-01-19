@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Environment files
+.env
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# IDE & System files
+.DS_Store
+.vscode
+.idea
+
+# Prisma
+/articles-backend/prisma/migrations

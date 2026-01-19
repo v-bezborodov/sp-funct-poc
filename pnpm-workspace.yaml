@@ -1,0 +1,4 @@
+packages:
+  - 'articles-backend'
+  - 'articles-frontend'
+  - 'packages/*'
