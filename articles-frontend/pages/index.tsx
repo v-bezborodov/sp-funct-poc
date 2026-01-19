@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { Reference, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 
 import client from "@/lib/apollo-server-client";
@@ -27,9 +27,9 @@ export default function Home({ articles: initialArticles }: HomeProps) {
           if (mutationData?.deleteArticle) {
             cache.modify({
               fields: {
-                articles(existingArticleRefs = [], { readField }) {
+                articles(existingArticleRefs: readonly Reference[] = [], { readField }) {
                   return existingArticleRefs.filter(
-                    (ref: any) => readField("id", ref) !== id,
+                    (ref) => readField("id", ref) !== id,
                   );
                 },
               },

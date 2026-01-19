@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
 
 import "dotenv/config";
-import * as Prisma from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import * as fs from "fs";
 import * as path from "path";
 import { parse } from "csv-parse/sync";
 import { Article } from "@sports-app/shared";
+import { PrismaClient } from "@prisma/client";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
-const prisma = new (Prisma as any).PrismaClient({ adapter });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // CSV file is in the prisma directory, relative to the backend root

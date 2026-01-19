@@ -5,6 +5,7 @@ import client from "@/lib/apollo-server-client";
 import { GET_ARTICLE_BY_ID, GET_ARTICLES } from "@/graphql/queries";
 import { UPDATE_ARTICLE } from "@/graphql/mutations";
 import { Article } from "@sports-app/shared";
+import { GetServerSideProps } from "next/dist/types";
 
 export default function EditArticle({ article }: { article: Article }) {
   const router = useRouter();
@@ -124,7 +125,7 @@ export default function EditArticle({ article }: { article: Article }) {
   );
 }
 
-export async function getServerSideProps(context: any) {
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
   const { id } = context.params;
 
   try {
