@@ -14,7 +14,6 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  // CSV file is in the prisma directory, relative to the backend root
   const csvFilePath = path.resolve(
     process.cwd(),
     "prisma",
@@ -27,7 +26,6 @@ async function main() {
 
   const fileContent = fs.readFileSync(csvFilePath, "utf-8");
 
-  // Cast the output to ArticleRecord[]
   const records = parse(fileContent, {
     columns: true,
     skip_empty_lines: true,
@@ -44,7 +42,7 @@ async function main() {
         id: record.id.toString(),
         title: record.title,
         content: record.content,
-        imageUrl: record.imageUrl,
+        imageUrl: record.imageUrl ?? null,
         createdAt: new Date(record.createdAt || Date.now()),
       },
     });

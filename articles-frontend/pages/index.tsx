@@ -27,7 +27,10 @@ export default function Home({ articles: initialArticles }: HomeProps) {
           if (mutationData?.deleteArticle) {
             cache.modify({
               fields: {
-                articles(existingArticleRefs: readonly Reference[] = [], { readField }) {
+                articles(
+                  existingArticleRefs: readonly Reference[] = [],
+                  { readField },
+                ) {
                   return existingArticleRefs.filter(
                     (ref) => readField("id", ref) !== id,
                   );
