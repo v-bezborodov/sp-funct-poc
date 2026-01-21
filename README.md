@@ -43,7 +43,7 @@ cd ..
 
 To reset schema, from your articles-backend folder:
 ```bash
-pnpm exec prisma migrate reset
+pnpm db:reset
 ```
 
 ### 3. Run the Application
