@@ -29,7 +29,7 @@ From the root directory:
 ```bash
 pnpm install
 cp articles-backend/.env.example articles-backend/.env
-cp articles-frontend/env.example articles-frontend/env 
+cp articles-frontend/.env.example articles-frontend/.env 
 docker-compose up -d
 ```
 
