@@ -10,6 +10,7 @@ import { GetServerSideProps } from "next/dist/types";
 export default function EditArticle({ article }: { article: Article }) {
   const router = useRouter();
   const { title = "", content = "" } = article || {};
+  const [isNavigating, setIsNavigating] = useState(false);
   const [form, setForm] = useState({ title: title, content: content });
 
   useEffect(() => {
@@ -21,8 +22,13 @@ export default function EditArticle({ article }: { article: Article }) {
   const [updateArticle, { loading: isUpdating, error: serverError }] =
     useMutation(UPDATE_ARTICLE, {
       refetchQueries: [{ query: GET_ARTICLES }],
-      onCompleted: () => router.push("/"),
+      onCompleted: () => {
+        setIsNavigating(true);
+        router.push("/");
+      },
     });
+
+  const showOverlay = isUpdating || isNavigating;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +41,7 @@ export default function EditArticle({ article }: { article: Article }) {
         },
       });
     } catch (err) {
+      setIsNavigating(false);
       // eslint-disable-next-line no-console
       console.error("Mutation error:", err);
     }
@@ -46,7 +53,7 @@ export default function EditArticle({ article }: { article: Article }) {
   return (
     <div className="min-h-screen py-12 bg-zinc-50 dark:bg-black">
       <div className="max-w-xl mx-auto bg-white dark:bg-zinc-900 p-8 rounded-2xl shadow-xl relative overflow-hidden">
-        {isUpdating && (
+        {showOverlay && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/70 backdrop-blur-[2px] dark:bg-black/70 transition-all">
             <svg
               className="h-12 w-12 animate-spin text-green-600"
@@ -68,7 +75,7 @@ export default function EditArticle({ article }: { article: Article }) {
               />
             </svg>
             <p className="mt-4 font-bold text-zinc-800 dark:text-zinc-200">
-              Updating Article...
+              {isNavigating ? "Redirecting..." : "Updating Article..."}
             </p>
           </div>
         )}
@@ -85,28 +92,28 @@ export default function EditArticle({ article }: { article: Article }) {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div
-            className={`${isUpdating ? "opacity-30" : "opacity-100"} transition-opacity`}
+            className={`${showOverlay ? "opacity-30" : "opacity-100"} transition-opacity`}
           >
             <label className="block text-sm font-semibold mb-2 dark:text-zinc-300">
               Title
             </label>
             <input
               value={form.title}
-              disabled={isUpdating}
+              disabled={showOverlay}
               className="w-full p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-green-500"
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
           </div>
 
           <div
-            className={`${isUpdating ? "opacity-30" : "opacity-100"} transition-opacity`}
+            className={`${showOverlay ? "opacity-30" : "opacity-100"} transition-opacity`}
           >
             <label className="block text-sm font-semibold mb-2 dark:text-zinc-300">
               Content
             </label>
             <textarea
               value={form.content}
-              disabled={isUpdating}
+              disabled={showOverlay}
               className="w-full p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl h-48 bg-transparent outline-none focus:ring-2 focus:ring-green-500"
               onChange={(e) => setForm({ ...form, content: e.target.value })}
             />
@@ -114,10 +121,10 @@ export default function EditArticle({ article }: { article: Article }) {
 
           <button
             type="submit"
-            disabled={isUpdating}
+            disabled={showOverlay}
             className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-100 dark:shadow-none transition-all active:scale-95 disabled:opacity-50"
           >
-            {isUpdating ? "Processing..." : "Save Changes"}
+            {showOverlay ? "Processing..." : "Save Changes"}
           </button>
         </form>
       </div>

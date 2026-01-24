@@ -60,7 +60,7 @@ Make sure you have this file in `articles-backend/.env.example`:
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sports_db?schema=public" # example
 PORT=4000
 ```
-and in `articles-frontend/env.example`:
+and in `articles-frontend/.env.example`:
 
 ```text
 NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql # example
