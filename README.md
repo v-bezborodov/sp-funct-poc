@@ -29,6 +29,7 @@ From the root directory:
 ```bash
 pnpm install
 cp articles-backend/.env.example articles-backend/.env
+cp articles-frontend/env.example articles-frontend/env 
 docker-compose up -d
 ```
 
@@ -53,9 +54,14 @@ pnpm dev
 
 ### Recommended 
 
-Make sure you have this file in `articles-backend/.env.example` so the reviewer knows exactly what to paste:
+Make sure you have this file in `articles-backend/.env.example`:
 
 ```text
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sports_db?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sports_db?schema=public" # example
 PORT=4000
+```
+and in `articles-frontend/env.example`:
+
+```text
+NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql # example
 ```
